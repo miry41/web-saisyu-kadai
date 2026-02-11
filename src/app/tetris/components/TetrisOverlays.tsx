@@ -32,6 +32,8 @@ export function TetrisOverlays({ game, onRestart }: TetrisOverlaysProps) {
         <OverlayWithActions
           frameClass="border-rose-400 text-rose-200 shadow-[0_0_25px_rgba(251,113,133,0.45)]"
           onRestart={onRestart}
+          showShareToX
+          score={game.score}
         >
           GAME OVER
         </OverlayWithActions>
@@ -52,11 +54,32 @@ function OverlayWithActions({
   children,
   frameClass,
   onRestart,
+  showShareToX = false,
+  score = 0,
 }: {
   children: string;
   frameClass: string;
   onRestart: () => void;
+  showShareToX?: boolean;
+  score?: number;
 }) {
+  const getScoreComment = (value: number) => {
+    if (value >= 15000) return "神プレイ出た！";
+    if (value >= 10000) return "かなり仕上がってきた！";
+    if (value >= 6000) return "いい感じに積めた！";
+    if (value >= 3000) return "まだまだ伸ばせる！";
+    if (value >= 1000) return "もっと頑張りたい...";
+    if (value >= 0) return "全然だめだ...";
+    return "次はもっと高得点を狙う！";
+  };
+
+  const handleShareToX = () => {
+    const topUrl = `${window.location.origin}/`;
+    const text = `スコアは ${score} 点！\n${getScoreComment(score)}\n#Tetris #GRAVITY_TETRIS\n`;
+    const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(topUrl)}`;
+    window.open(tweetUrl, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <div className="absolute inset-0 flex items-center justify-center bg-black/45 backdrop-blur-[1px]">
       <div className={`rounded-xl border-2 bg-[#020617]/95 px-16 py-10 font-mono text-5xl font-bold tracking-wider ${frameClass}`}>
@@ -65,17 +88,29 @@ function OverlayWithActions({
           <button
             type="button"
             onClick={onRestart}
-            className="border-2 border-cyan-300/80 bg-cyan-300/10 px-8 py-4 text-lg font-semibold text-cyan-100 transition hover:bg-cyan-300/20"
+            className="rounded-md border-2 border-cyan-300/80 bg-cyan-300/15 px-8 py-4 text-lg font-semibold text-cyan-100 transition hover:bg-cyan-300/30"
           >
             Restart
           </button>
           <Link
             href="/"
-            className="border-2 border-fuchsia-300/70 bg-fuchsia-300/10 px-8 py-4 text-lg font-semibold text-fuchsia-100 transition hover:bg-fuchsia-300/20"
+            className="rounded-md border-2 border-fuchsia-300/70 bg-fuchsia-300/15 px-8 py-4 text-lg font-semibold text-fuchsia-100 transition hover:bg-fuchsia-300/30"
           >
             Back
           </Link>
         </div>
+        {showShareToX && (
+          <div className="mt-7 border-t border-slate-500/40 pt-5 text-center">
+            <p className="mb-3 text-base font-semibold tracking-normal text-slate-200/90">スコアをシェア</p>
+            <button
+              type="button"
+              onClick={handleShareToX}
+              className="rounded-md border-2 border-sky-300/80 bg-sky-300/15 px-8 py-4 text-lg font-semibold tracking-normal text-sky-100 transition hover:bg-sky-300/30"
+            >
+              Share on X
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
