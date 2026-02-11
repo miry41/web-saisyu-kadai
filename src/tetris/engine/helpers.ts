@@ -3,8 +3,6 @@ import { canPlace } from "@/tetris/logic/collide";
 import { spawnNext } from "@/tetris/logic/spawn";
 import type { GameState } from "@/tetris/types";
 
-export const SOFT_DROP_HOLD_THRESHOLD_MS = 120;
-
 export function clearSoftDropState(): Pick<GameState, "softDropRequested" | "softDropHoldMs" | "softDropActive"> {
   return { softDropRequested: false, softDropHoldMs: 0, softDropActive: false };
 }
@@ -24,7 +22,7 @@ export function clearRotateTransientState(): Pick<
 
 export function applySoftDropTimer(state: GameState, deltaMs: number): GameState {
   const holdMs = state.softDropRequested ? state.softDropHoldMs + deltaMs : 0;
-  return { ...state, softDropHoldMs: holdMs, softDropActive: state.softDropRequested && holdMs >= SOFT_DROP_HOLD_THRESHOLD_MS };
+  return { ...state, softDropHoldMs: holdMs, softDropActive: state.softDropRequested };
 }
 
 export function getDropIntervalMs(elapsedMs: number): number {
